@@ -1,0 +1,9 @@
+data
+shps
+*.shp
+*.cpg
+*.shx
+*.dbf
+*.csv
+.ipynb*
+__pycache__
