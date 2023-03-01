@@ -9,21 +9,26 @@ import utm
 
 
 def buffer_point(x1, x2, x3):
-    
+        
     # Get the point specific utm zone and projected coordinates
     x, y, zone, hem = utm.from_latlon(x1.y, x1.x)
     
+    if hem == "N":
+        hem = "north"
+    else:
+        hem = "south"
+    
     # Create the projection variables
     wgs84 = pyproj.CRS('EPSG:4326')
-    utm_proj = pyproj.CRS.from_proj4(f"+proj=utm +datum=WGS84 +units=m +zone={str(zone)} +no_defs +ellps=WGS84 +towgs84=0,0,0")
+    utm_proj = pyproj.CRS.from_proj4(f"+proj=utm +lat_0={str(x1.x)} +lon_0={str(x1.y)} +datum=WGS84 +units=m +zone={str(zone)} +{hem} +no_defs +ellps=WGS84 +towgs84=0,0,0")
     projection_back = pyproj.Transformer.from_crs(utm_proj, wgs84, always_xy=True).transform
     
     # Create the Point and buffer it
     p = gpd.GeoSeries([Point(x, y)]).buffer(x3 * 1000, cap_style = 3)
-
+    
     # Project the polygon buffer back to 4326
     box = Polygon(shapely.ops.transform(projection_back, p[0]))
-    
+        
     return [box, zone, hem]
 
 

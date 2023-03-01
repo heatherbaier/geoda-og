@@ -7,3 +7,5 @@ shps
 *.csv
 .ipynb*
 __pycache__
+*.torch
+*.sav

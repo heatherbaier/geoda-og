@@ -1,0 +1,15 @@
+Epoch 0/49
+----------
+train Loss: 0.9506 Acc: 0.6457
+val Loss: 0.9377 Acc: 0.6528
+Epoch 1/49
+----------
+train Loss: 0.8849 Acc: 0.6649
+val Loss: 0.8648 Acc: 0.6369
+Epoch 2/49
+----------
+train Loss: 0.8510 Acc: 0.6682
+val Loss: 0.8857 Acc: 0.6601
+Epoch 3/49
+----------
+train Loss: 0.8185 Acc: 0.6808
