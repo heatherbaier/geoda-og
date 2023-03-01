@@ -6,7 +6,7 @@ from utils import *
 
 if __name__ == "__main__":
     
-    gdf = gpd.read_file("./buffer_test.shp")
+    gdf = gpd.read_file("./data/clean/shps/wealth_buffers.shp")
     gdf['random_points'] = gdf.apply(lambda x: gen_random_points(x['geometry'], x['n_points']), axis = 1)
     gdf = gdf[["DHSID", "DHSYEAR", "DHSCLUST", "folder", "buffer_siz", "hv001", "hv271", "geometry", "n_points", "random_points"]]
     gdf = gdf.explode('random_points')
