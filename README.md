@@ -6,7 +6,6 @@
 2) Save the Household Recode .zip file Stata dataset (.dta) to a folder titled "data/zips/" 
 3) Run prep_data.sh
 
-
 ### Land Cover Data Process
 1) 
 
