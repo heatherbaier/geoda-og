@@ -164,9 +164,10 @@ def train_model(model, criterion, optimizer, scheduler, data, device, folder_nam
                 f.write('{} Loss: {:.4f} Acc: {:.4f}\n'.format(phase, epoch_loss, epoch_acc))
 
             # deep copy the model
-            if phase == 'val' and epoch_acc > best_acc:
+            if phase == 'val' and epoch_loss < best_loss:
                 
                 best_acc = epoch_acc
+                best_loss = epoch_loss
                 best_model_wts = copy.deepcopy(model.state_dict())
 
                 # Save each epoch that achieves a higher accuracy than the current best_acc in case the model crashes mid-training
@@ -188,6 +189,7 @@ def train_model(model, criterion, optimizer, scheduler, data, device, folder_nam
     print('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
     print('Best val acc: {:4f}'.format(best_acc))
+    print('Best val loss: {:4f}'.format(best_loss))
 
     # load best model weights
     model.load_state_dict(best_model_wts)

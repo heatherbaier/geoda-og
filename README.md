@@ -9,6 +9,13 @@
 ### Land Cover Data Process
 1) 
 
+### Individual and Pooling Models
+
+To train individual models, cd into the pooling folder and use the command:
+
+```python3 train.py --folder_name {FOLDER_NAME} --iso {ISO2}```
+
+
 ### To recreate figures
 
 

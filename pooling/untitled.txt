@@ -1,0 +1,4 @@
+    printf "%s_v1" "${COUNTRIES[i]}"
+
+
+    echo $FOLDER_NAME | tee -a $GPU_FILE
