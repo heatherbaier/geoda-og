@@ -9,3 +9,6 @@ shps
 __pycache__
 *.torch
 *.sav
+*archive*
+*models*
+*hn_v1*
