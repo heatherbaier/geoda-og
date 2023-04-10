@@ -21,20 +21,19 @@ class ImgAugTransform:
         self.aug = iaa.Sequential([
 #             iaa.Scale((224, 224)),
             iaa.Sometimes(0.30, iaa.GaussianBlur(sigma=(0, 3.0))),
-                    iaa.Sometimes(0.25, iaa.Multiply((0.5, 1.5), per_channel=0.5)),
-                    iaa.Sometimes(0.20, iaa.Invert(0.25, per_channel=0.5)),
-                    iaa.Sometimes(0.25, iaa.ReplaceElementwise(
+            iaa.Sometimes(0.25, iaa.Multiply((0.5, 1.5), per_channel=0.5)),
+            iaa.Sometimes(0.20, iaa.Invert(0.25, per_channel=0.5)),
+            iaa.Sometimes(0.25, iaa.ReplaceElementwise(
                         iap.FromLowerResolution(iap.Binomial(0.1), size_px=8),
                         iap.Normal(128, 0.4*128),
-                        per_channel=0.5)
-                                             ),
-                    iaa.Sometimes(0.30, iaa.AdditivePoissonNoise(40)),
-            iaa.Fliplr(0.5),
-            iaa.Affine(rotate=(-20, 20), mode='symmetric'),
+                        per_channel=0.5)),
+            iaa.Sometimes(0.30, iaa.AdditivePoissonNoise(40)),
+            iaa.Sometimes(0.30, iaa.Fliplr(0.5)),
+            iaa.Sometimes(0.30, iaa.Affine(rotate=(-20, 20), mode='symmetric')),
             iaa.Sometimes(0.30,
                           iaa.OneOf([iaa.Dropout(p=(0, 0.1)),
                                      iaa.CoarseDropout(0.1, size_percent=0.5)])),
-            iaa.AddToHueAndSaturation(value=(-10, 10), per_channel=True)
+            iaa.Sometimes(0.30, iaa.AddToHueAndSaturation(value=(-10, 10), per_channel=True))
         ])
 
     def __call__(self, img):
@@ -44,7 +43,7 @@ class ImgAugTransform:
 
 
 data_transforms = transforms.Compose([
-                    ImgAugTransform(),
+#                     ImgAugTransform(),
                     transforms.ToTensor(),
 #                     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
                   ])
@@ -63,7 +62,7 @@ data_transforms = transforms.Compose([
 # }
 
 
-def train_model(model, criterion, optimizer, scheduler, data, device, folder_name, num_epochs=25):
+def train_model(model, criterion, optimizer, scheduler, data, device, folder_name, num_epochs = 25):
 
     epoch_num = 0
 
@@ -112,7 +111,7 @@ def train_model(model, criterion, optimizer, scheduler, data, device, folder_nam
 #                 agad
                 
                 inputs = inputs.to(device)
-                labels = labels.to(device)
+                labels = labels.to(device).view(-1, 1)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -122,11 +121,11 @@ def train_model(model, criterion, optimizer, scheduler, data, device, folder_nam
                 with torch.set_grad_enabled(phase == 'train'):
                     
                     outputs = model(inputs)
-                    _, preds = torch.max(outputs, 1)    
+#                     _, preds = torch.max(outputs, 1)    
                     
 #                     print(preds, labels)
                     
-#                     print(labels)
+#                     print(outputs)
                     
 #                     _, preds = torch.max(outputs, 1)
                     loss = criterion(outputs, labels)
@@ -147,7 +146,7 @@ def train_model(model, criterion, optimizer, scheduler, data, device, folder_nam
                 # statistics
                 running_loss += loss.item() * inputs.size(0)
 #                 print(running_loss, loss, data.get_num(phase))
-                running_corrects += torch.sum(preds == labels.data)
+#                 running_corrects += torch.sum(preds == labels.data)
     
 #                 print(running_corrects)
                 
@@ -155,18 +154,18 @@ def train_model(model, criterion, optimizer, scheduler, data, device, folder_nam
                 scheduler.step()
 
             epoch_loss = running_loss / data.get_num(phase)
-            epoch_acc = running_corrects.double() / data.get_num(phase)
+#             epoch_acc = running_corrects.double() / data.get_num(phase)
 
-            print('{} Loss: {:.4f} Acc: {:.4f}'.format(
-                phase, epoch_loss, epoch_acc))
+            print('{} Loss: {:.4f}'.format(
+                phase, epoch_loss))
             
             with open(f"./{folder_name}/records.txt", "a") as f:
-                f.write('{} Loss: {:.4f} Acc: {:.4f}\n'.format(phase, epoch_loss, epoch_acc))
+                f.write('{} Loss: {:.4f}\n'.format(phase, epoch_loss))
 
             # deep copy the model
             if phase == 'val' and epoch_loss < best_loss:
                 
-                best_acc = epoch_acc
+#                 best_acc = epoch_acc
                 best_loss = epoch_loss
                 best_model_wts = copy.deepcopy(model.state_dict())
 
@@ -188,10 +187,13 @@ def train_model(model, criterion, optimizer, scheduler, data, device, folder_nam
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
-    print('Best val acc: {:4f}'.format(best_acc))
+#     print('Best val acc: {:4f}'.format(best_acc))
     print('Best val loss: {:4f}'.format(best_loss))
 
     # load best model weights
     model.load_state_dict(best_model_wts)
     return model
+
+
+
 
